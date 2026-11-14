@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Kiss the Moon Release Tour – Practice</title>
+<style>
+  /* background image: bg.webp next to this page, fixed while the songs scroll */
+  :root {
+    --bg-image: url("bg.webp");
+    --veil: rgba(20, 10, 32, 0.45);
+    --card: rgba(22, 14, 34, 0.62);
+    --ink: #fff;
+    --muted: rgba(255, 255, 255, 0.72);
+    --rule: rgba(255, 255, 255, 0.16);
+    --accent: #ffb8ec;
+    --accent-soft: rgba(255, 120, 220, 0.18);
+    --btn-ink: #2a1236;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #1a0f24; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: #1a0f24;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    min-height: 100vh;
+    isolation: isolate;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(var(--veil), var(--veil)), var(--bg-image) center / cover no-repeat, #1a0f24;
+  }
+  header { text-shadow: 0 2px 18px rgba(20, 8, 30, 0.55); }
+  header p { color: rgba(255, 255, 255, 0.85) !important; }
+  h4.group, .tools { text-shadow: 0 1px 10px rgba(20, 8, 30, 0.7); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 72px 24px 120px; }
+
+  header { margin-bottom: 48px; }
+  h1 {
+    font-size: clamp(36px, 7vw, 64px);
+    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+  header p { margin-top: 16px; color: var(--muted); font-size: 15px; max-width: 52ch; }
+
+  /* one collapsible card per song */
+  details.song {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    backdrop-filter: blur(18px) saturate(1.2);
+  }
+  details.song > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    user-select: none;
+  }
+  details.song > summary::-webkit-details-marker { display: none; }
+  summary .n { color: var(--muted); font-variant-numeric: tabular-nums; width: 1.6em; }
+  summary h2 {
+    flex: 1;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  summary .tags { display: flex; gap: 6px; }
+  summary .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  summary .chev {
+    width: 10px; height: 10px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg) translateY(-3px);
+    transition: transform .2s;
+    flex: none;
+  }
+  details[open] > summary .chev { transform: rotate(-135deg) translateY(-3px); }
+
+  .body { padding: 0 22px 26px 22px; border-top: 1px solid var(--rule); }
+  .body h3 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 24px 0 10px;
+  }
+  .note { color: var(--muted); font-size: 14px; font-style: italic; margin-top: 18px; }
+
+  /* recordings */
+  .rec { margin-bottom: 14px; }
+  .rec-label { font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 12px; }
+  .rec audio { width: 100%; display: block; }
+  .speed { display: flex; gap: 4px; }
+  .speed button {
+    font: inherit;
+    font-size: 12px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 1px 7px;
+    cursor: pointer;
+  }
+  .speed button.on { background: var(--accent); border-color: var(--accent); color: var(--btn-ink); }
+  .missing { font-size: 14px; color: var(--muted); }
+
+  /* lyrics */
+  .lyrics { font-size: 17px; line-height: 1.6; }
+  .lyrics p + p { margin-top: 1.1em; }
+  .lyrics .line { display: block; }
+  .lyrics .two {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 -6px;
+    padding: 0 6px;
+    border-radius: 4px;
+  }
+  .lyrics .line .two { margin: 0; padding: 0 4px; font-style: italic; }
+  .lyrics .line strong.two { font-style: normal; font-weight: 700; padding: 0 3px; }
+  .lyrics .line em strong.two { font-style: italic; }
+  .legend { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .legend span { background: var(--accent-soft); color: var(--accent); font-weight: 600; padding: 0 5px; border-radius: 3px; }
+
+  /* sheet music */
+  .sheet img { width: 100%; border-radius: 8px; border: 1px solid var(--rule); background: #fff; display: block; }
+  .sheet img + img { margin-top: 10px; }
+  .sheet a { color: var(--accent); }
+
+  h4.group {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 36px 0 12px 4px;
+  }
+  h4.group:first-child { margin-top: 0; }
+  .tools { display: flex; gap: 16px; margin-bottom: 20px; font-size: 14px; }
+  .tools button { font: inherit; background: none; border: 0; color: var(--accent); cursor: pointer; padding: 0; }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 48px 16px 96px; }
+    details.song > summary { padding: 16px; gap: 12px; }
+    summary .tags { display: none; }
+    .body { padding: 0 16px 22px; }
+    .lyrics { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Kiss the Moon<br>Release Tour</h1>
+      <p>For practising: tap a song to open its recordings, lyrics and – where available – sheet music. When you sing on your own, it’s highlighted.</p>
+    </header>
+    <div class="tools">
+      <button type="button" id="openAll">Open all</button>
+      <button type="button" id="closeAll">Close all</button>
+    </div>
+    <main id="songs"></main>
+  </div>
+
+<script>
+/*
+  SONGS – edit here.
+
+  recordings: list of { label, src }. Put audio files (mp3 or m4a) into audio/,
+              e.g. { label: "Second voice louder", src: "audio/hope-2nd.m4a" }.
+  sheet:      sheet music in noten/ – images (png/jpg) and/or a PDF,
+              e.g. ["noten/hope.pdf", "noten/hope-1.png"]. Leave out if there is none.
+  lyrics:     separate stanzas with a blank line.
+              "+ " at the start of a line   = whole line with second voice (highlighted)
+              *asterisks*                   = bold, second voice sings along/alone
+              _underscores_                 = italic
+              {curly braces}                = highlighted, italic (second voice only)
+  note:       optional hint (entry, key, …).
+  group:      section the song is listed under.
+*/
+const SONGS = [
+  // ── Arrangement steht ──
+  {
+    group: "Arrangement ready",
+    title: "Toad Pond",
+    recordings: [
+      { label: "Both voices", src: "audio/toad-pond-beide.mp3" },
+      { label: "Phone recording with Anni – second voice easier to hear", src: "audio/toad-pond-handy.m4a" },
+    ],
+    lyrics: `
+Whirlybird leaves the maple tree to
+Kiss the moon in the toad pond
+Don’t you die, die in my sight
+
+A row of stones cross the pavement
+Pilgrimage of pregnant bodies
+Throughout the cities,
+Homeward bound
+
+Amber and lavender melt the horizon into a
+Field of sleep, til tomorrow stumbles in
+Will you lie, lie by my side?
+
+The cristal eye of a tadpole
+Freshly hatched deep in the reeds,
+Drunk in the creek, joy to be
+Home
+Home
+Home
+`,
+  },
+  {
+    group: "Arrangement ready",
+    title: "Keeping Score",
+    recordings: [
+      { label: "Both voices", src: "audio/keeping-score-beide.m4a" },
+    ],
+    lyrics: `
+slow down time
+feel her body as mine
+carry his smell inside
+god, she was still a child
+
+why do I carry the weight of them all? *_(of it all)_*
+my body keeping terrible score *_(of it all)_*
+why do I carry the weight of the world?
+A heart without a home
+A killer in my throat
+Allergic to my bones
+
+pill after pill
+bent beneath his will
+the world forgot her name
+but I can hear her pray:
+
+Can someone carry the weight of it all? *_(of it all)_*
+my body can no longer endure *_(of it all)_*
+Can you carry the weight of my world?
+A heart without a throat
+A killer in her home
+Allergic to his bones
+
+war burns outside
+in the shelter he welcomed life
+and held it as it died
+Moments with his firstborn child
+
+why do I carry the weight of them all? *_(of it all)_*
+my body keeping terrible score *_(of it all)_*
+why do I carry the weight of the world?
+why do I carry the weight of the world?
+Don’t ask why, love
+Trust you can, love
+Don’t ask why you can,
+Know you can, love
+`,
+  },
+  {
+    group: "Arrangement ready",
+    title: "Juniper",
+    recordings: [
+      { label: "Second voice louder", src: "audio/juniper-2nd.m4a" },
+      { label: "Both voices", src: "audio/juniper-beide.m4a" },
+    ],
+    lyrics: `
+Half a breath,
+Letting go
+Step into the sky,
+Gentle breeze,
+Pulling home,
+Broken all your bones
+
+And when you tried to leave this life,
+I followed half the way.
+But you were so far gone that I
+Could only watch and wait,
+And wait, and wait.
+
+I heard you sing Ophelia’s songs.
+Thirteen years is long.
+Juniper, what have you done
+In the name of love?
+
+Two times on the other side,
+I followed half the way.
+You showed up as a fox,
+And I could only watch and wait,
+And wait, and wait.
+
+Monitors beep and hum.
+Half your skull is gone.
+Blinking lights.
+Oxygen.
+Days go on and on.
+
+And will your body heal enough
+For you to speak my name?
+I’ll hold your hands and kiss your face.
+As long as it will take, I’ll wait,
+And wait, and wait.
+`,
+  },
+  {
+    group: "Arrangement ready",
+    title: "Mondlied",
+    recordings: [
+      { label: "Both voices", src: "audio/mondlied-beide.m4a" },
+    ],
+    sheet: ["noten/mondlied.pdf", "noten/mondlied-1.png", "noten/mondlied-2.png", "noten/mondlied-3.png"],
+    lyrics: `
+Unter tiefer Wolkendecke der Mitsommernachtsnächte
+Singt weit entfernt ein gelber Mond vom Ozean und Mutter Tod,
+– die nie vergisst und nichts verliert,
+Alles frisst und neu gebiert,
+Alles frisst und neu gebiert
+
+Abertausend Flüsterstimmen
+Heute Nacht zum Bach gerinnen
+Der Tränenfluss fließt weg von hier,
+Weiter Richtung großes Meer
+Wenn Stille in den Morgen zieht,
+Singst du mit mir des Mondes Lied?
+Singst du mit mir des Mondes Lied?
+`,
+  },
+  {
+    group: "Arrangement ready",
+    title: "Mayfly",
+    recordings: [
+      { label: "Second voice louder", src: "audio/mayfly-2nd.m4a" },
+      { label: "Both voices", src: "audio/mayfly-beide.m4a" },
+    ],
+    sheet: ["noten/mayfly.pdf", "noten/mayfly-1.png", "noten/mayfly-2.png", "noten/mayfly-3.png", "noten/mayfly-4.png"],
+    lyrics: `
+Death comes home, takes off her shoes {(death comes)}
+Hold no thing, nothing to lose {(stone in her shoe)}
+
+Satisfied
+Die, die
+
+One day mayfly, flying away {(one fly)}
+Oh we die in all possible ways
+
+Satisfied
+Die, die
+
+My child, lay down your name
+Hushabye, don’t you cry, go to sleep
+May fly free
+
+One comes home, no need for shoes {(one home)}
+Watch the sunrise, nothing to prove {(red, green and blue)}
+
+Satisfied
+Die, die
+`,
+  },
+  {
+    group: "Arrangement ready",
+    title: "Blood",
+    recordings: [
+      { label: "Second voice louder", src: "audio/blood-2nd.m4a" },
+      { label: "Both voices", src: "audio/blood-beide.m4a" },
+    ],
+    lyrics: `
+*In the beginning* was the *blood*
+carries me back to the *crotch of god*
+
+Then there was *grief*
+Without sugar, *no relief*
+
+third came the *rage*
+vultures *circling the sky for seven days*
+
+They *sing for crickets, sing for the wind,* sing for the unborn child _(*Hush my child*)_
+As they eat in the midsummer night
+
+melt into the *colors of the earth*
+where this heart is planted *in the dirt*
+
+Like a slug it spawns
+And *blossoms by the dawn*
+
+*This* is my destiny
+*I* wish you were *proud of me*
+*They control me*
+I control *you*
+
+_(*In the beginning was the blood*)_
+taste of dry home and dust
+they’ll be hungry again by dusk
+`,
+  },
+  {
+    group: "Arrangement ready",
+    title: "Little Dust",
+    recordings: [
+      { label: "Both voices", src: "audio/little-dust-beide.mp3" },
+    ],
+    lyrics: `
+morning rise
+I buried my own body
+miles of stone
+stories thick and heavy
+bluebirds chime
+hours passing by
+wayward moon
+shows her face too soon
+
+afternoon
+a drunken stranger’s body
+fish for dreams
+rivers thick and heavy
+bluegill cries
+“in the woods there is no light.”
+says the jay
+“love, you’ve gone astray.”
+
+*woke up on the forest floor*
+nightmares from the night before
+skin still covered in muddy rags
+I’m coming back
+
+evening comes
+No air left in my lungs
+trees for miles
+a grave that’s thick and heavy
+blackbird grins
+says it’s only paper thin
+“A grain of sand did hide
+The mountain from your eyes”
+
+*woke up on the forest floor*
+dreams I dreamed the day before
+little dust still in my eyes
+Just need to cry
+`,
+  },
+  // ── Hier denken wir uns noch was aus ──
+  // ── Noch offen ──
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "Pappelbaum / Poplar Tree",
+    recordings: [],
+    lyrics: `
+Wendet ab, was schmerzt noch nach vom
+Ewigen Tag
+Der Abdruck bleibt
+Gottes Geist Spricht in mir ohne Wort,
+hast du’s auch gehört?
+Klang lässt nach, für die Ewigkeit gedacht
+Schwindet auch, schwindet auch
+
+Pappelbaum,
+Wind o wind himmlisches Kind
+Turm aus grün
+Ruft zum Gebet, Krone weht und dann vergeht
+Bild verblasst für die Ewigkeit gedacht
+Schwindet auch, schwindet auch
+
+Gras vergilbt
+Im Dunklen Zerfällt was
+Einst war das Bild
+Tür geht auf
+Wenn der Wind meinen Atem nimmt, mein
+Himmlisches Kind
+Nun liegt im Grass, für die Ewigkeit gedacht
+Schwindest auch, du schwindest auch
+`,
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "Hope",
+    recordings: [
+      { label: "Sketch, all voices (phone recording)", src: "audio/hope-sketch.mp3" },
+      { label: "Released version (as on Spotify)", src: "audio/hope-master.mp3" },
+    ],
+    lyrics: `
+Black conifers, veil of rain
+Worn paint on a wooden shed
+Half-covered in rotten shingles
+Drops falling through broken glass
+
+But inside burns no more light
+’Cause even life can’t slow the tides
+Of Father Time, who hears our fight
+Darkest night, no more light
+
+Cracked tiles and weathered wood
+Drawer next to the kitchen sink
+Lock holding a crooked key
+Seems there’s nothing to see
+
+But wrapped in cloth, mostly dry
+Mute and cold, like hollow bones
+Next to soap and cardboard mold
+Lies one last piece of hope
+`,
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "Angel",
+    recordings: [],
+    lyrics: `
+find another ground of hope
+Open to the widest scope
+
+*Angel*
+
+Speaking with your ocean eyes
+Everything the words would hide
+
+*Angel, my sweet angel*
+
+find another way to cope
+Every breath along the road
+
+*Angel*
+*Angel, my sweet angel*
+
+*trapped in a human shell*
+*under a silent spell*
+*far too beautiful to tell*
+
+trembling hands reach for my heart
+Forever fits inside your arms
+
+Angel, my sweet angel
+
+Time melts down to pray beside
+Our bodies in fluorescent lights
+
+Angel, my sweet angel
+trapped in a human shell
+under a silent spell
+too beautiful to tell
+
+Angel, my sweet angel
+`,
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "Tuesday II",
+    recordings: [],
+    lyrics: `
+Sadness sits next to love in class,
+Perfume and lipstick stains while everyone laughs
+Demons long long beaten come visit again
+On Tuesday I left the door open for them (Welcome)
+
+Raindrops, one, two, three, 4, 5, 6, 7, 8, 9, 10, 11, 12, thirteen
+Drowning dragon flies, lullabies
+Seaweed and apologies fast asleep
+On the ocean bed of the baltic sea, (Undone)
+
+Hey babe, what’s your name, sugar pie?
+Don’t the cigarettes taste good again?
+Hug me like the moon the tide. Suicide.
+Fading my little bird. Who to blame? (No one)
+`,
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "God Is a Man",
+    recordings: [
+      { label: "Recording", src: "audio/god-is-a-man.m4a" },
+    ],
+    lyrics: `
+Learn to love you in the arms of the other
+but I hate it, Oh I hate it
+nothing sacred, about this hatred
+
+since you’re gone my ground is gone too
+all alone, yet on the run
+I know it’s wrong to place your god inside a man
+
+not my man anymore,
+pounding on a door
+nothing left in store
+swim without a shore
+forgot about the war
+
+learn to love the other in your arms
+seems impossible, still ineffable
+And I hate it, hate it
+Is there something sacred, in this hatred?
+nothing sacred, about this hatred
+oh I hate this, I miss the sacred
+but the sacred – don’t know where to place it
+`,
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "Lay Fallow",
+    recordings: [],
+    lyrics: "",
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "The Forest",
+    recordings: [],
+    lyrics: "",
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "The Wombat",
+    recordings: [],
+    lyrics: `
+I took the earth beneath my feet
+As solid ground, the base of things
+Turns out it’s just another thing that falls
+And eight thousand miles beneath those feet,
+A wombat presses his belly
+Against the same spinning planet,
+Certain he had found solid ground,
+When in reality it was just me.
+`,
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "Weiße Nacht",
+    recordings: [],
+    lyrics: `
+Weiße Nacht lehnt am Waldesrand,
+holt uns alle eines Tages heim.
+
+Ich kann mir die Stille nicht vorstellen
+
+und der Krähen Flügelschlag
+schallt noch nach.
+
+Ich kann mir die Stille nicht vorstellen.
+
+Ich kann mir die Stille nicht vorstellen,
+die der Wind mit sich bringt,
+nachdem er gestern am Morgen deinen Vater mitnimmt.
+
+Ich kann mir die Stille nicht vorstellen,
+die sein Herz hinterlässt,
+sie rauscht im dämmernden Frührot und im Pappelgeäst.
+
+Doch kannst du das Flüstern erhorchen,
+das in der Baumkrone lacht?
+Raunt seit gestern Morgen aus dem blassgrünen Dach,
+dass er immer noch da ist,
+nur die Hülle verließ
+und als goldene Brise durch die Baumwipfel fliegt.
+`,
+  },
+  {
+    group: "Not decided yet / Solo – I sing these alone",
+    title: "Sabodisho",
+    recordings: [],
+    sheet: ["noten/sabodisho.pdf", "noten/sabodisho-1.png"],
+    lyrics: "",
+  },
+];
+
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function lyricsHTML(text) {
+  return text.trim().split(/\n\s*\n/).map((stanza) =>
+    "<p>" + stanza.split("\n").map((raw) => {
+      const l = raw.trim();
+      const two = l.startsWith("+ ");
+      const html = esc(two ? l.slice(2) : l)
+        .replace(/\{([^}]*)\}/g, '<span class="two">$1</span>')
+        .replace(/\*([^*]+)\*/g, '<strong class="two">$1</strong>')
+        .replace(/(^|[\s(>])_([^_]+)_(?=$|[\s).,!?<])/g, '$1<em>$2</em>');
+      return `<span class="line${two ? " two" : ""}">${html || "&nbsp;"}</span>`;
+    }).join("") + "</p>"
+  ).join("");
+}
+
+function recordingsHTML(recs = []) {
+  if (!recs.length) return `<p class="missing">No recording yet.</p>`;
+  return recs.map((r) => `
+    <div class="rec">
+      <div class="rec-label">
+        <span>${esc(r.label)}</span>
+        <span class="speed">
+          ${[0.75, 0.9, 1].map((s) => `<button type="button" data-speed="${s}" class="${s === 1 ? "on" : ""}">${s}×</button>`).join("")}
+        </span>
+      </div>
+      <audio controls preload="none" src="${esc(r.src)}"></audio>
+    </div>`).join("");
+}
+
+function sheetHTML(sheet) {
+  if (!sheet) return "";
+  const files = Array.isArray(sheet) ? sheet : [sheet];
+  const inner = files.map((f) => /\.pdf$/i.test(f)
+    ? `<p><a href="${esc(f)}" target="_blank" rel="noopener">Open sheet music as PDF ↗</a></p>`
+    : `<a href="${esc(f)}" target="_blank" rel="noopener"><img src="${esc(f)}" alt="Sheet music" loading="lazy"></a>`
+  ).join("");
+  return `<h3>Sheet music</h3><div class="sheet">${inner}</div>`;
+}
+
+const root = document.getElementById("songs");
+root.innerHTML = SONGS.map((s, i) => {
+  const hasTwo = /^\s*\+ |[{*]/m.test(s.lyrics || "");
+  const tags = [
+    s.recordings?.length ? "Audio" : "",
+    s.sheet ? "Sheet music" : "",
+  ].filter(Boolean).map((t) => `<span class="tag">${t}</span>`).join("");
+  const groupHead = s.group && s.group !== SONGS[i - 1]?.group
+    ? `<h4 class="group">${esc(s.group)}</h4>` : "";
+  return `${groupHead}
+  <details class="song" id="song-${i + 1}">
+    <summary>
+      <span class="n">${String(i + 1).padStart(2, "0")}</span>
+      <h2>${esc(s.title)}</h2>
+      <span class="tags">${tags}</span>
+      <span class="chev" aria-hidden="true"></span>
+    </summary>
+    <div class="body">
+      ${s.note ? `<p class="note">${esc(s.note)}</p>` : ""}
+      <h3>Recordings</h3>
+      ${recordingsHTML(s.recordings)}
+      ${sheetHTML(s.sheet)}
+      <h3>Lyrics</h3>
+      ${hasTwo ? `<p class="legend"><span>highlighted</span> = second voice</p>` : ""}
+      ${s.lyrics?.trim() ? `<div class="lyrics">${lyricsHTML(s.lyrics)}</div>` : `<p class="missing">Lyrics coming soon.</p>`}
+    </div>
+  </details>`;
+}).join("");
+
+// only one recording plays at a time; pause everything in a song when it is closed
+document.addEventListener("play", (e) => {
+  document.querySelectorAll("audio").forEach((a) => { if (a !== e.target) a.pause(); });
+}, true);
+root.querySelectorAll("details.song").forEach((d) => d.addEventListener("toggle", () => {
+  if (!d.open) d.querySelectorAll("audio").forEach((a) => a.pause());
+}));
+
+// speed buttons
+root.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-speed]");
+  if (!b) return;
+  const rec = b.closest(".rec");
+  const audio = rec.querySelector("audio");
+  audio.playbackRate = Number(b.dataset.speed);
+  audio.preservesPitch = true;
+  rec.querySelectorAll("[data-speed]").forEach((x) => x.classList.toggle("on", x === b));
+});
+
+// a missing audio file shows a hint instead of a broken player
+root.querySelectorAll("audio").forEach((a) => a.addEventListener("error", () => {
+  a.closest(".rec").innerHTML = `<p class="missing">Recording “${esc(a.closest(".rec").querySelector(".rec-label span").textContent)}” is missing (${esc(a.getAttribute("src"))}).</p>`;
+}));
+
+document.getElementById("openAll").onclick = () => root.querySelectorAll("details").forEach((d) => (d.open = true));
+document.getElementById("closeAll").onclick = () => root.querySelectorAll("details").forEach((d) => (d.open = false));
+
+// open a song directly via #song-2
+if (location.hash) document.querySelector(location.hash)?.setAttribute("open", "");
+</script>
+</body>
+</html>
